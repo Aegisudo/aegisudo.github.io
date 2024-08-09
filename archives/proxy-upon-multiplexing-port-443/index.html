@@ -1,0 +1,378 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="Feasible Example of a Proxy Multiplex Port 443 with Nginx"><title>Proxy upon Multiplexing Port 443</title>
+<link rel=canonical href=https://blog.0bit.ch/archives/proxy-upon-multiplexing-port-443/><link rel=stylesheet href=/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css><meta property='og:title' content="Proxy upon Multiplexing Port 443"><meta property='og:description' content="Feasible Example of a Proxy Multiplex Port 443 with Nginx"><meta property='og:url' content='https://blog.0bit.ch/archives/proxy-upon-multiplexing-port-443/'><meta property='og:site_name' content='Aegis'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Xray'><meta property='article:tag' content='Docker'><meta property='article:tag' content='Proxy'><meta property='article:tag' content='Naiveproxy'><meta property='article:published_time' content='2023-12-25T00:00:00+00:00'><meta property='article:modified_time' content='2023-12-25T00:00:00+00:00'><meta property='og:image' content='https://blog.0bit.ch/archives/proxy-upon-multiplexing-port-443/Nginx_Docker.png'><meta name=twitter:title content="Proxy upon Multiplexing Port 443"><meta name=twitter:description content="Feasible Example of a Proxy Multiplex Port 443 with Nginx"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://blog.0bit.ch/archives/proxy-upon-multiplexing-port-443/Nginx_Docker.png'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu13739649187745961479.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>Aegis</a></h1><h2 class=site-description>Aegis Shields Me Against Being Forgotten.</h2></div></header><ol class=menu-social><li><a href=https://github.com/Aegisudo target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://t.me/Lucripitabot target=_blank title=Telegram rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-telegram"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 10l-4 4 6 6 4-16-18 7 4 2 2 6 3-4"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#preparation>Preparation</a><ol><li><a href=#basic-prep>Basic Prep</a></li><li><a href=#docker-and-docker-compose>Docker and Docker Compose</a></li></ol></li><li><a href=#operation>Operation</a><ol><li><a href=#docker-network>Docker Network</a></li><li><a href=#dns-record-and-ip-assignment>DNS record and IP assignment</a></li><li><a href=#acmesh-certification>Acme.sh Certification</a></li><li><a href=#install-nginx>Install Nginx</a></li><li><a href=#install-panel>Install Panel</a></li></ol></li><li><a href=#deploy-your-reality-and-vmlesscdn>Deploy Your Reality and VM/Less(CDN)</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/archives/proxy-upon-multiplexing-port-443/><img src=/archives/proxy-upon-multiplexing-port-443/Nginx_Docker_hu15683288082016754421.png srcset="/archives/proxy-upon-multiplexing-port-443/Nginx_Docker_hu15683288082016754421.png 800w, /archives/proxy-upon-multiplexing-port-443/Nginx_Docker_hu12575570843493899932.png 1600w" width=800 height=333 loading=lazy alt="Featured image of post Proxy upon Multiplexing Port 443"></a></div><div class=article-details><header class=article-category><a href=/categories/linux/ style=background-color:#fc3;color:#fff>Linux
+</a><a href=/categories/tutorial/ style=background-color:#e6a3be;color:#fff>Tutorial</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/archives/proxy-upon-multiplexing-port-443/>Proxy upon Multiplexing Port 443</a></h2><h3 class=article-subtitle>Feasible Example of a Proxy Multiplex Port 443 with Nginx</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Dec 25, 2023</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>5 minute read</time></div></footer></div></header><section class=article-content><p>For Reality, VM/Less and <del>NaiveProxy</del>(under construction) and you can replace whatever wrapped by &lt;> to fit your sets</p><h2 id=preparation>Preparation</h2><h3 id=basic-prep>Basic Prep</h3><p>The following things should be performed before you embark on each project</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>apt update <span class=o>&amp;&amp;</span> apt upgrade -y <span class=o>&amp;&amp;</span> apt dist-upgrade -y <span class=o>&amp;&amp;</span> apt full-upgrade -y <span class=o>&amp;&amp;</span> apt autoremove -y
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>reboot
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>apt update -y <span class=o>&amp;&amp;</span> apt install -y curl <span class=o>&amp;&amp;</span> apt install -y vim <span class=o>&amp;&amp;</span> apt install -y net-tools <span class=o>&amp;&amp;</span> apt install -y socat <span class=o>&amp;&amp;</span> apt install -y wget <span class=o>&amp;&amp;</span> apt install -y git <span class=o>&amp;&amp;</span> apt install sudo -y
+</span></span></code></pre></td></tr></table></div></div><h3 id=docker-and-docker-compose>Docker and Docker Compose</h3><p>You could install docker as follows if you are running on a x86_64 Linux, or visit Docker Compose <a class=link href=https://docs.docker.com/compose/install/linux/ target=_blank rel=noopener>Document</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>wget -qO- get.docker.com <span class=p>|</span> bash
+</span></span><span class=line><span class=cl>docker -v
+</span></span><span class=line><span class=cl>systemctl <span class=nb>enable</span> docker
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>DOCKER_CONFIG</span><span class=o>=</span><span class=si>${</span><span class=nv>DOCKER_CONFIG</span><span class=k>:-</span><span class=nv>$HOME</span><span class=p>/.docker</span><span class=si>}</span>
+</span></span><span class=line><span class=cl>mkdir -p <span class=nv>$DOCKER_CONFIG</span>/cli-plugins
+</span></span><span class=line><span class=cl>curl -SL https://github.com/docker/compose/releases/download/&lt;v2.23.3&gt;/docker-compose-linux-x86_64 -o <span class=nv>$DOCKER_CONFIG</span>/cli-plugins/docker-compose
+</span></span><span class=line><span class=cl><span class=c1># replace the &lt;Version&gt; based on your appetite.</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=operation>Operation</h2><h3 id=docker-network>Docker Network</h3><p>Create a shared network named <strong>nginx</strong>, where the gateway is <strong>192.168.18.1</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>docker network create --subnet 192.168.18.0/24 --gateway 192.168.18.1 nginx
+</span></span></code></pre></td></tr></table></div></div><h3 id=dns-record-and-ip-assignment>DNS record and IP assignment</h3><p>Add domain name record on CloudFlare(or other DNS services) and assign docker intranet IP as follows</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>&lt;ui&gt;.&lt;yourdomain.TLD&gt; # For your x-ui panel and CDN-Wrapped available
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>&lt;na&gt;.&lt;yourdomain.TLD&gt; # For NaiveProxy and CDN-Wrapped unavailable
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>192.168.18.2    # nginx
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>192.168.18.3    # acme and it won&#39;t be necessary if apply Wildcard Certification upon DNS challenge.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>192.168.18.4    # xui
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>192.168.18.5    # naive
+</span></span></code></pre></td></tr></table></div></div><h3 id=acmesh-certification>Acme.sh Certification</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>docker run --rm  -itd  <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -v /home/cert:/acme.sh <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --net<span class=o>=</span>nginx --ip 192.168.18.3 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=s2>&#34;CF_Token=yourCloudFlareToken&#34;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --name<span class=o>=</span>acme.sh <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  neilpang/acme.sh daemon
+</span></span></code></pre></td></tr></table></div></div><p>I highly recommend apply Wildcard Certification</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>docker <span class=nb>exec</span> -i acme.sh acme.sh --server letsencrypt --issue --dns dns_cf -d &lt;yourdomain.TLD&gt; -d *.&lt;yourdomain.TLD&gt;
+</span></span></code></pre></td></tr></table></div></div><p>But you can also apply Cert through Standalone</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>docker <span class=nb>exec</span> acme.sh --issue -d ui.&lt;yourdomain.TLD&gt; --server letsencrypt --standalone <span class=c1>#standalone</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=install-nginx>Install Nginx</h3><p>Create a temporary Nginx container for copying nginx&rsquo;s default master configuration file to the host machine</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>docker run --rm -v /home/nginx:/mnt nginx cp /etc/nginx/nginx.conf /mnt/
+</span></span></code></pre></td></tr></table></div></div><p>Create a Nginx Container and you also could use docker-compose.yml by setting variables accordingly.</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>docker run -d <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>--name nginx --network<span class=o>=</span>nginx --ip 192.168.18.2 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>-p 80:80 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>-p 443:443 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>-v /home/nginx/conf.d:/etc/nginx/conf.d <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>-v /home/nginx/html:/usr/share/nginx/html <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>-v /home/cert:/home/cert <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>-v /home/nginx/nginx.conf:/etc/nginx/nginx.conf nginx
+</span></span></code></pre></td></tr></table></div></div><p>According to this mount command for deploying nginx, the path <code>/usr/share/nginx/html/</code> in the container actually corresponds to the <code>/home/nginx/html/</code> path of the host, which usually holds the root folder of the website. Create a folder in the <code>/home/nginx/html/</code> directory of the host, and name it after your domain name, in this case: <code>ui.&lt;yourdomain.TLD></code></p><p>Create a file in the <code>/home/nginx/conf.d/</code> directory ending with .conf, in this case named: <code>ui.&lt;yourdomain.TLD></code>.conf; open this file and edit the contents to:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>server</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>listen</span> <span class=mi>80</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>listen</span> <span class=mi>8443</span> <span class=s>ssl</span> <span class=s>http2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>server_name</span> <span class=s>ui.&lt;yourdomain.TLD&gt;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>index</span> <span class=s>index.php</span> <span class=s>index.html</span> <span class=s>index.htm</span> <span class=s>default.php</span> <span class=s>default.htm</span> <span class=s>default.html</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>root</span> <span class=s>/usr/share/nginx/html/ui.&lt;yourdomain.TLD&gt;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>ssl_certificate</span> <span class=s>/home/cert/&lt;yourdomain.TLD&gt;_ecc/fullchain.cer</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>ssl_certificate_key</span> <span class=s>/home/cert/&lt;yourdomain.TLD&gt;_ecc/&lt;yourdomain.TLD&gt;.key</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>ssl_protocols</span> <span class=s>TLSv1.1</span> <span class=s>TLSv1.2</span> <span class=s>TLSv1.3</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>ssl_ciphers</span> <span class=s>EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>ssl_prefer_server_ciphers</span> <span class=no>on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>ssl_session_cache</span> <span class=s>shared:SSL:10m</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>ssl_session_timeout</span> <span class=mi>10m</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>add_header</span> <span class=s>Strict-Transport-Security</span> <span class=s>&#34;max-age=31536000&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=kn>location</span> <span class=p>~</span> <span class=sr>^/(\.user.ini|\.htaccess|\.git|\.env|\.svn|\.project|LICENSE|README.md)</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>return</span> <span class=mi>404</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>	<span class=kn>location</span> <span class=p>~</span><span class=sr>*</span> <span class=s>\.log</span>$ <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>deny</span> <span class=s>all</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=kn>location</span> <span class=p>~</span> <span class=sr>^/\.well-known</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_pass</span> <span class=s>http://acme.sh:80</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>Host</span> <span class=nv>$host</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>X-Real-IP</span> <span class=nv>$remote_addr</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>X-Forwarded-For</span> <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=kn>if</span> <span class=s>(</span> <span class=nv>$uri</span> <span class=p>~</span> <span class=sr>&#34;^/\.well-known/.*\.(php|jsp|py|js|css|lua|ts|go|zip|tar\.gz|rar|7z|sql|bak)$&#34;</span> <span class=s>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>return</span> <span class=mi>403</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>	<span class=kn>location</span> <span class=s>/VMLessPath</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_redirect</span> <span class=no>off</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_pass</span> <span class=s>http://192.168.18.4:&lt;VM/Less</span> <span class=s>port&gt;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_http_version</span> <span class=mi>1</span><span class=s>.1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>Upgrade</span> <span class=nv>$http_upgrade</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>Connection</span> <span class=s>&#34;upgrade&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>Host</span> <span class=nv>$http_host</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_read_timeout</span> <span class=s>300s</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>X-Real-IP</span> <span class=nv>$remote_addr</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>X-Forwarded-For</span> <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>	<span class=kn>location</span> <span class=s>/YourPanelPath</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_pass</span> <span class=s>http://192.168.18.4:2053</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>Host</span> <span class=nv>$host</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>X-Real-IP</span> <span class=nv>$remote_addr</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_set_header</span> <span class=s>X-Forwarded-For</span> <span class=nv>$proxy_add_x_forwarded_for</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=kn>access_log</span> <span class=s>/usr/share/nginx/html/ui.&lt;yourdomain.TLD&gt;/panel.log</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>error_log</span> <span class=s>/usr/share/nginx/html/ui.&lt;yourdomain.TLD&gt;/panel.error.log</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>Modify the main configuration file of nginx (<code>/home/nginx/nginx.conf</code>), find the stream module, and add the following configuration to it</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>user</span>  <span class=s>nginx</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>worker_processes</span>  <span class=s>auto</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>error_log</span>  <span class=s>/var/log/nginx/error.log</span> <span class=s>notice</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>pid</span>        <span class=s>/var/run/nginx.pid</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>events</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kn>worker_connections</span>  <span class=mi>1024</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>stream</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>map</span> <span class=nv>$ssl_preread_server_name</span> <span class=nv>$sni_name</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>&lt;SNI</span> <span class=s>service</span> <span class=s>name&gt;</span> <span class=s>reality</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>sing.&lt;yourdomain.TLD&gt;</span> <span class=s>naive</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>default</span> <span class=s>site</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=kn>upstream</span> <span class=s>reality</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>server</span> <span class=mi>192</span><span class=s>.168.18.4:&lt;your</span> <span class=s>reality</span> <span class=s>port&gt;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=kn>upstream</span> <span class=s>naive</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>server</span> <span class=n>192.168.18.5</span><span class=p>:</span><span class=mi>443</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=kn>upstream</span> <span class=s>site</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>server</span> <span class=n>127.0.0.1</span><span class=p>:</span><span class=mi>8443</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=kn>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kn>listen</span> <span class=mi>443</span> <span class=s>reuseport</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>proxy_pass</span> <span class=nv>$sni_name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>ssl_preread</span> <span class=no>on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>http</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kn>include</span>       <span class=s>/etc/nginx/mime.types</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>default_type</span>  <span class=s>application/octet-stream</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>log_format</span>  <span class=s>main</span>  <span class=s>&#39;</span><span class=nv>$remote_addr</span> <span class=s>-</span> <span class=nv>$remote_user</span> <span class=s>[</span><span class=nv>$time_local]</span> <span class=s>&#34;</span><span class=nv>$request&#34;</span> <span class=s>&#39;</span>
+</span></span><span class=line><span class=cl>                      <span class=s>&#39;</span><span class=nv>$status</span> <span class=nv>$body_bytes_sent</span> <span class=s>&#34;</span><span class=nv>$http_referer&#34;</span> <span class=s>&#39;</span>
+</span></span><span class=line><span class=cl>                      <span class=s>&#39;&#34;</span><span class=nv>$http_user_agent&#34;</span> <span class=s>&#34;</span><span class=nv>$http_x_forwarded_for&#34;&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>access_log</span>  <span class=s>/var/log/nginx/access.log</span>  <span class=s>main</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>sendfile</span>        <span class=no>on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=c1>#tcp_nopush     on;
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=kn>keepalive_timeout</span>  <span class=mi>65</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>#gzip  on;
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=kn>include</span> <span class=s>/etc/nginx/conf.d/*.conf</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=install-panel>Install Panel</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://github.com/MHSanaei/3x-ui.git
+</span></span><span class=line><span class=cl><span class=nb>cd</span> 3x-ui
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>docker run -itd <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>   -e <span class=nv>XRAY_VMESS_AEAD_FORCED</span><span class=o>=</span><span class=nb>false</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>   -v <span class=nv>$PWD</span>/db/:/etc/x-ui/ <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>   --network<span class=o>=</span>nginx <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>   --ip 192.168.18.4 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>   --restart<span class=o>=</span>unless-stopped <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>   --name 3x-ui <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>   ghcr.io/mhsanaei/3x-ui:latest
+</span></span></code></pre></td></tr></table></div></div><p>Default name and pwd is &ldquo;admin&rdquo; and &ldquo;admin&rdquo;, do change them after login and set your panel path matched to the part of .conf</p><h2 id=deploy-your-reality-and-vmlesscdn>Deploy Your Reality and VM/Less(CDN)</h2><p>for Reality:
+Reality SNI and port must match to SNI and port in (<code>/home/nginx/nginx.conf</code>).
+for VM/Less:
+/VMLessPath and port must match to SNI and port in (<code>/home/nginx/html/ui.&lt;yourdomain.TLD>.conf</code>).</p><blockquote><p>Then, enjoy your surfing.</p></blockquote></section><footer class=article-footer><section class=article-tags><a href=/tags/xray/>Xray</a>
+<a href=/tags/docker/>Docker</a>
+<a href=/tags/proxy/>Proxy</a>
+<a href=/tags/naiveproxy/>Naiveproxy</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article class=has-image><a href=/archives/regular-proxy-installation/><div class=article-image><img src=/archives/regular-proxy-installation/proxy.48b166e584fd21b3260128332085bb6a_hu17448591778611208801.jpg width=250 height=150 loading=lazy alt="Featured image of post Regular Proxy Installation" data-hash="md5-SLFm5YT9IbMmASgzIIW7ag=="></div><div class=article-details><h2 class=article-title>Regular Proxy Installation</h2></div></a></article><article class=has-image><a href=/archives/markdown-syntax-guide/><div class=article-image><img src=/archives/markdown-syntax-guide/Syntax.97281380647f3503224297ed28d017cd_hu3856476631024476872.png width=250 height=150 loading=lazy alt="Featured image of post Markdown Syntax Guide" data-hash="md5-lygTgGR/NQMiQpftKNAXzQ=="></div><div class=article-details><h2 class=article-title>Markdown Syntax Guide</h2></div></a></article></div></div></aside><script src=//cdn.jsdelivr.net/npm/twikoo@1.6.21/dist/twikoo.all.min.js></script><div id=tcomment></div><style>.twikoo{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}:root[data-scheme=dark]{--twikoo-body-text-color-main:rgba(255, 255, 255, 0.9);--twikoo-body-text-color:rgba(255, 255, 255, 0.7)}.twikoo .el-input-group__prepend,.twikoo .tk-action-icon,.twikoo .tk-submit-action-icon,.twikoo .tk-time,.twikoo .tk-comments-no,.twikoo .tk-comments-count{color:var(--twikoo-body-text-color)}.twikoo .el-input__inner,.twikoo .el-textarea__inner,.twikoo .tk-preview-container,.twikoo .tk-content,.twikoo .tk-nick,.twikoo .tk-send{color:var(--twikoo-body-text-color-main)}.twikoo .el-button{color:var(--twikoo-body-text-color)!important}.twikoo .el-input__count{color:var(--twikoo-body-text-color)!important}.OwO .OwO-body{background-color:var(--body-background)!important;color:var(--body-text-color)!important}</style><script>twikoo.init({envId:"https://cmtwiko.0bit.ch/",el:"#tcomment"})</script><footer class=site-footer><section class=copyright>&copy;
+2020 -
+2024 Aegis Zoey</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.26.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
